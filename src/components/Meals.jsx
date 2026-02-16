@@ -1,15 +1,18 @@
 // import { use } from 'react';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import MealItem from './MealItem';
 import useHttp from '../hooks/useHttp';
 import Error from './Error';
 
 const requestConfig = {}
 
-export default function Meals() {
+export default function Meals({ searchTerm }) {
 
     const { data: loadedMeals, isLoading, error } = useHttp('http://localhost:3000/meals', requestConfig, []);
 
+    const filteredMeals = loadedMeals.filter((meal) => 
+        meal.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     if (isLoading) {
         return <p className='center'>Fetching Meals...</p>
@@ -23,7 +26,15 @@ export default function Meals() {
     //     return <p>Failed to load meals.</p>
     // }
 
-    return <ul id="meals">
-        {loadedMeals.map((meal) => (<MealItem key={meal.id} meal={meal} />))}
-    </ul>
+    return (
+        <>
+            {filteredMeals.length === 0 ? (
+                <p className='center'>No meals found matching "{searchTerm}"</p>
+            ) : (
+                <ul id="meals">
+                    {filteredMeals.map((meal) => (<MealItem key={meal.id} meal={meal} />))}
+                </ul>
+            )}
+        </>
+    )
 }

@@ -1,11 +1,13 @@
-import { useContext,useActionState } from "react";
+import { useContext, useActionState, useEffect } from "react";
 import Modal from "./UI/Modal";
 import CartContext from "../store/CartContext";
+import ToastContext from "../store/ToastContext";
 import { currencyFormatter } from "../util/formatting";
 import Input from "./UI/Input";
 import Button from "./UI/Button";
 import UserProgressContext from "../store/UserProgressContext";
 import useHttp from "../hooks/useHttp";
+import Error from "./Error";
 
 const requestConfig = {
     method: 'POST',
@@ -17,10 +19,18 @@ const requestConfig = {
 export default function Checkout() {
     const cartCtx = useContext(CartContext);
     const userProgressCtx = useContext(UserProgressContext);
+    const toastCtx = useContext(ToastContext);
 
-    const { data,error, sendRequest, clearData } = useHttp('http://localhost:3000/orders', requestConfig);
+    const { data, error, sendRequest, clearData } = useHttp('http://localhost:3000/orders', requestConfig);
 
     const cartTotal = cartCtx.items.reduce((totalPrice, item) => totalPrice + item.quantity * item.price, 0);
+
+    // Show toast on error
+    useEffect(() => {
+        if (error) {
+            toastCtx.showToast(`✕ Error: ${error}`, 'error');
+        }
+    }, [error, toastCtx]);
 
     function handleClose() {
         userProgressCtx.hideCheckout()
@@ -32,7 +42,7 @@ export default function Checkout() {
         clearData()
     }
 
-    async function checkoutAction(prevState,fd) {
+    async function checkoutAction(prevState, fd) {
         const customerData = Object.fromEntries(fd.entries());
 
         await sendRequest(
@@ -43,11 +53,9 @@ export default function Checkout() {
                 }
             })
         )
-
-
     }
 
-    const [formState,formAction,isSending]=useActionState(checkoutAction,null)
+    const [formState, formAction, isSending] = useActionState(checkoutAction, null)
 
     let actions = (<><Button type="button" textOnly onClick={handleClose}>Close</Button>
         <Button>Submit Order</Button></>)

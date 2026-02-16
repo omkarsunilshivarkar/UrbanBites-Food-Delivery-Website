@@ -1,10 +1,11 @@
 import { useContext } from 'react';
 import logoImg from '../assets/logo.jpg';
 import Button from './UI/Button';
+import MealsFilter from './MealsFilter';
 import CartContext from '../store/CartContext';
 import UserProgressContext from '../store/UserProgressContext';
 
-export default function Header() {
+export default function Header({ onSearchChange, searchTerm }) {
 
     const cartCtx = useContext(CartContext);
     const userProgressCtx = useContext(UserProgressContext);
@@ -19,9 +20,10 @@ export default function Header() {
     
     return <header id="main-header">
         <div id="title">
-            <img src={logoImg} alt="ReactFood Logo" />
-            <h1>ReactFood</h1>
+            <img src={logoImg} alt="UrbanBites Logo" />
+            <h1>UrbanBites</h1>
         </div>
+        <MealsFilter onSearchChange={onSearchChange} />
         <nav>
             <Button textOnly onClick={handleShowCart}>Cart ({totalCartItems})</Button>
         </nav>

@@ -1,4 +1,4 @@
-import { createContext, useReducer, useState } from "react";
+import { createContext, useReducer, useEffect } from "react";
 
 const CartContext = createContext({
     items: [],
@@ -48,12 +48,31 @@ function cartReducer(state, action) {
         return {...state,items:[]}
     }
 
+    if (action.type === 'LOAD_CART') {
+        return { ...state, items: action.items }
+    }
+
     return state;
+}
+
+function getInitialCart() {
+    try {
+        const savedCart = localStorage.getItem('urbanbites_cart');
+        return savedCart ? JSON.parse(savedCart) : { items: [] };
+    } catch (error) {
+        console.error('Failed to load cart from localStorage:', error);
+        return { items: [] };
+    }
 }
 
 export function CartContextProvider({ children }) {
 
-    const [cart, dispatchCartAction] = useReducer(cartReducer, { items: [] });
+    const [cart, dispatchCartAction] = useReducer(cartReducer, getInitialCart());
+
+    // Save cart to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('urbanbites_cart', JSON.stringify(cart));
+    }, [cart]);
 
     function addItem(item){
         dispatchCartAction({type:'ADD_ITEM', item})
