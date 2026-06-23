@@ -2,7 +2,7 @@ import { createContext, useState, useCallback } from 'react';
 
 const ToastContext = createContext({
     toasts: [],
-    showToast: (message, type) => {}
+    showToast: () => {}
 });
 
 export function ToastContextProvider({ children }) {

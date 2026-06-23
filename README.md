@@ -1,6 +1,6 @@
 # UrbanBites — Food Delivery Web App
 
-**Live Demo:** _Coming soon_
+**Live Demo:** [urban-bites-food-delivery-website.vercel.app](https://urban-bites-food-delivery-website.vercel.app/)
 
 A full-stack food ordering application where users can browse meals, manage a cart, and place orders. Built with React and Express as an end-to-end portfolio project.
 
@@ -152,14 +152,13 @@ UrbanBites-Food-Delivery-Website/
 
 ## Deployment
 
-_Planned: Vercel (frontend) + Render (backend). Live demo link will be added here._
+The application is deployed entirely to Vercel (both the frontend React SPA and the Express backend via Serverless Functions).
 
 | Service | Role | Root directory |
 |---------|------|----------------|
-| Render | Express API | `backend/` |
-| Vercel | React SPA | project root |
+| Vercel | React SPA & Express API | project root |
 
-Frontend will use `VITE_API_URL` pointing to the deployed backend URL.
+The frontend communicates with the serverless backend using `/api` configured via rewrites in `vercel.json` and `VITE_BACKEND_URL` in `.env.production`.
 
 ---
 

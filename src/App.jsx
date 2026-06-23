@@ -20,8 +20,8 @@ function App() {
       <UserProgressContextProvider>
         <CartContextProvider>
           <Toast />
-          <Header onSearchChange={handleSearchChange} searchTerm={searchTerm} />
-          <Meals searchTerm={searchTerm} onSearchChange={handleSearchChange} />
+          <Header onSearchChange={handleSearchChange} />
+          <Meals searchTerm={searchTerm} />
           <Cart />
           <Checkout/>
         </CartContextProvider>

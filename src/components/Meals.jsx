@@ -1,5 +1,4 @@
 // import { use } from 'react';
-import { useEffect } from 'react';
 import MealItem from './MealItem';
 import useHttp from '../hooks/useHttp';
 import Error from './Error';
@@ -30,7 +29,7 @@ export default function Meals({ searchTerm }) {
     return (
         <>
             {filteredMeals.length === 0 ? (
-                <p className='center'>No meals found matching "{searchTerm}"</p>
+                <p className='center'>No meals found matching &quot;{searchTerm}&quot;</p>
             ) : (
                 <ul id="meals">
                     {filteredMeals.map((meal) => (<MealItem key={meal.id} meal={meal} />))}

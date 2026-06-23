@@ -5,7 +5,7 @@ import MealsFilter from './MealsFilter';
 import CartContext from '../store/CartContext';
 import UserProgressContext from '../store/UserProgressContext';
 
-export default function Header({ onSearchChange, searchTerm }) {
+export default function Header({ onSearchChange }) {
 
     const cartCtx = useContext(CartContext);
     const userProgressCtx = useContext(UserProgressContext);

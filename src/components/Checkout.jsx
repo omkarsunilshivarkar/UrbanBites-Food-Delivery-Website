@@ -56,7 +56,7 @@ export default function Checkout() {
         )
     }
 
-    const [formState, formAction, isSending] = useActionState(checkoutAction, null)
+    const [, formAction, isSending] = useActionState(checkoutAction, null)
 
     let actions = (<><Button type="button" textOnly onClick={handleClose}>Close</Button>
         <Button>Submit Order</Button></>)
