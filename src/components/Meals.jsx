@@ -8,7 +8,8 @@ const requestConfig = {}
 
 export default function Meals({ searchTerm }) {
 
-    const { data: loadedMeals, isLoading, error } = useHttp('http://localhost:3000/meals', requestConfig, []);
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+    const { data: loadedMeals, isLoading, error } = useHttp(`${backendUrl}/meals`, requestConfig, []);
 
     const filteredMeals = loadedMeals.filter((meal) => 
         meal.name.toLowerCase().includes(searchTerm.toLowerCase())

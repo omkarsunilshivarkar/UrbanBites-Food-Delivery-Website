@@ -21,7 +21,8 @@ export default function Checkout() {
     const userProgressCtx = useContext(UserProgressContext);
     const toastCtx = useContext(ToastContext);
 
-    const { data, error, sendRequest, clearData } = useHttp('http://localhost:3000/orders', requestConfig);
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+    const { data, error, sendRequest, clearData } = useHttp(`${backendUrl}/orders`, requestConfig);
 
     const cartTotal = cartCtx.items.reduce((totalPrice, item) => totalPrice + item.quantity * item.price, 0);
 

@@ -1,12 +1,21 @@
 import fs from "node:fs/promises";
+import path from "node:path";
+import os from "node:os";
+import { fileURLToPath } from "node:url";
 
 import bodyParser from "body-parser";
 import express from "express";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 
 app.use(bodyParser.json());
-app.use(express.static("public"));
+
+// Serve static files both under /api and / to support local and Vercel routing
+app.use("/api", express.static(path.join(__dirname, "public")));
+app.use("/", express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -15,12 +24,33 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/meals", async (req, res) => {
-  const meals = await fs.readFile("./data/available-meals.json", "utf8");
+// Configure data files paths
+const isVercel = process.env.VERCEL === "1" || !!process.env.VERCEL;
+const dataDir = isVercel ? os.tmpdir() : path.join(__dirname, "data");
+const ordersFilePath = path.join(dataDir, "orders.json");
+const mealsFilePath = path.join(__dirname, "data", "available-meals.json");
+
+// Helper to initialize orders.json in /tmp if it doesn't exist (Vercel read-only filesystem workaround)
+async function initializeOrdersFile() {
+  try {
+    await fs.access(ordersFilePath);
+  } catch {
+    await fs.writeFile(ordersFilePath, "[]", "utf8");
+  }
+}
+
+if (isVercel) {
+  await initializeOrdersFile();
+}
+
+const router = express.Router();
+
+router.get("/meals", async (req, res) => {
+  const meals = await fs.readFile(mealsFilePath, "utf8");
   res.json(JSON.parse(meals));
 });
 
-app.post("/orders", async (req, res) => {
+router.post("/orders", async (req, res) => {
   const orderData = req.body.order;
 
   await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -55,12 +85,22 @@ app.post("/orders", async (req, res) => {
     ...orderData,
     id: (Math.random() * 1000).toString(),
   };
-  const orders = await fs.readFile("./data/orders.json", "utf8");
+
+  // Make sure file exists (safety fallback)
+  if (isVercel) {
+    await initializeOrdersFile();
+  }
+
+  const orders = await fs.readFile(ordersFilePath, "utf8");
   const allOrders = JSON.parse(orders);
   allOrders.push(newOrder);
-  await fs.writeFile("./data/orders.json", JSON.stringify(allOrders));
+  await fs.writeFile(ordersFilePath, JSON.stringify(allOrders));
   res.status(201).json({ message: "Order created!" });
 });
+
+// Route everything through the router mounted on both /api and /
+app.use("/api", router);
+app.use("/", router);
 
 app.use((req, res) => {
   if (req.method === "OPTIONS") {
@@ -70,4 +110,11 @@ app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
 });
 
-app.listen(3000);
+// Don't listen to port on Vercel (Vercel manages the serverless execution lifecycle)
+if (!isVercel) {
+  app.listen(3000, () => {
+    console.log("Local Express server running on port 3000");
+  });
+}
+
+export default app;

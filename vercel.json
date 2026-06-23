@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/images/:path*",
+      "destination": "/images/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/api"
+    }
+  ],
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "backend/data/available-meals.json"
+    }
+  }
+}

@@ -8,6 +8,7 @@ export default function MealItem({ meal }) {
     const [quantity, setQuantity] = useState(1);
     const cartCtx = useContext(CartContext);
     const toastCtx = useContext(ToastContext);
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
     function handleAddMealToCart() {
         for (let i = 0; i < quantity; i++) {
@@ -30,7 +31,7 @@ export default function MealItem({ meal }) {
     return (
         <li className="meal-item">
             <article>
-                <img src={`http://localhost:3000/${meal.image}`} alt={meal.name} />
+                <img src={`${backendUrl}/${meal.image}`} alt={meal.name} />
                 <div>
                     <h3>{meal.name}</h3>
                     <p className="meal-item-price">{currencyFormatter.format(meal.price)}</p>
